@@ -607,7 +607,7 @@ line3'''
             }
         }
          // Jacoco XML plugin stage begins
-        stage('Checkout sample code for Cobetura coverage.xml file') {
+        stage('Checkout sample code for Jacoco exec files') {
             steps {
                 git branch: "main", url: "https://github.com/harness-community/drone-coverage-report.git"
             }
@@ -628,7 +628,7 @@ line3'''
             }
         }
         // Cobertura plugin stage begins
-        stage('Checkout sample code for Cobetura coverage.xml file') {
+        stage('Checkout sample code for Cobertura coverage.xml file') {
             steps {
                 git branch: "main", url: "https://github.com/harness-community/drone-coverage-report.git"
             }
@@ -644,6 +644,40 @@ line3'''
                          methodCoverageTargets: '80, 0, 0',
                          classCoverageTargets: '70, 0, 0',
                          conditionalCoverageTargets: '65, 0, 0'
+            }
+        }
+        // slackFileUpload plugin stage begins here
+        stage('Generate Temp File') {
+            steps {
+                script {
+                    def words = ['apple', 'banana', 'cherry', 'date', 'elderberry', 'fig', 'grape']
+                    def randomWords = (1..5).collect { words[new Random().nextInt(words.size())] }.join(' ')
+                    writeFile file: 'b.txt', text: randomWords
+                    echo "Temp file created with content: ${randomWords}"
+                }
+            }
+        }
+        stage('Upload to Slack') {
+            steps {
+                slackUploadFile(
+                    channel: 'C07TL1KNV8Q',
+                    credentialId: 'SlackChannelCreds',
+                    failOnError: true,
+                    filePath: 'b.txt',
+                    initialComment: 'jenkins file upload test'
+                )
+            }
+        }
+        // slackSend plugin stage begins here
+        stage('Send Slack Notification') {
+            steps {
+                slackSend channel: 'dev',
+                          color: 'good',
+                          iconEmoji: ':rocket:',
+                          message: 'hi, the test msg slack now test ...',
+                          teamDomain: 'jenkins-bot-testing',
+                          tokenCredentialId: 'slackcreds03',
+                          username: 'jenkins-test-user'
             }
         }
     }
