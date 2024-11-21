@@ -1,49 +1,26 @@
-
 pipeline {
     agent any
-
-    environment {
-        NEXUS_CREDENTIALS_ID = 'nexus-hnstest01-creds'            // Jenkins credentials ID
-        NEXUS_URL = '4.24.1.21:9192/'                               // Nexus server URL
-        NEXUS_REPOSITORY = 'plg01maven2'                         // Nexus repository
-        NEXUS_GROUP_ID = 'test01'                                  // Nexus group ID
-        NEXUS_VERSION = 'nexus3'                                   // Nexus version
-        ARTIFACT_FILE = 'fruit_names.txt'                          // File name for generated file
-        ARTIFACT_ID = 'fruit-names-v0.1'                           // Artifact ID
-        ARTIFACT_VERSION = '0.12hrns'                                   // Artifact version
-        ARTIFACT_TYPE = 'txt'                                      // Artifact type
-    }
 
     stages {
         stage('Generate File') {
             steps {
-                script {
-                    // Create the file with 10 fruit names in the current workspace
-                    writeFile file: env.ARTIFACT_FILE, text: 'apple\nbanana\ncherry\ndate\nelderberry\nfig\ngrape\nhoneydew\nkiwi\nlemon'
-                    echo "File generated with fruit names at ${env.ARTIFACT_FILE}"
-                }
+                writeFile file: 'fruit_names.txt', text: 'apple\nbanana\ncherry\ndate\nelderberry\nfig\ngrape\nhoneydew\nkiwi\nlemon'
+                echo "Generated file: fruit_names.txt"
             }
         }
 
-        stage('Upload Artifact to Nexus') {
+        stage('Upload to Nexus') {
             steps {
-                script {
-                    nexusArtifactUploader artifacts: [
-                        [
-                            artifactId: env.ARTIFACT_ID,
-                            classifier: '',
-                            file: env.ARTIFACT_FILE,
-                            type: env.ARTIFACT_TYPE
-                        ]
-                    ],
-                    credentialsId: env.NEXUS_CREDENTIALS_ID,
-                    groupId: env.NEXUS_GROUP_ID,
-                    nexusUrl: env.NEXUS_URL,
-                    nexusVersion: env.NEXUS_VERSION,
-                    protocol: 'http',
-                    repository: env.NEXUS_REPOSITORY,
-                    version: env.ARTIFACT_VERSION
-                }
+                nexusArtifactUploader artifacts: [[
+                    artifactId: 'fruit-names-v0.1',
+                    file: 'fruit_names.txt',
+                    type: 'txt'
+                ]],
+                credentialsId: 'nexus-hnstest01-creds',
+                groupId: 'test01',
+                nexusUrl: '4.24.1.21:9192/',
+                repository: 'plg01maven2',
+                version: '0.12hrns'
             }
         }
     }
