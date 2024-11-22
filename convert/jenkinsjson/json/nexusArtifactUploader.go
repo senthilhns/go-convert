@@ -24,11 +24,11 @@ func ConvertNexusArtifactUploader(node Node, variables map[string]string) *harne
 		ArtifactUploaderImage)
 
 	tmpStepPlugin := step.Spec.(*harness.StepPlugin)
-	tmpStepPlugin.With["username"] = "<user_id>"
-	tmpStepPlugin.With["password"] = "<password>"
+	tmpStepPlugin.With["username"] = "add user name"
+	tmpStepPlugin.With["password"] = "add password"
 	artifactsListStr, err := GetArtifactsListString(node)
 	if err != nil {
-		log.Printf("Error getting artifacts list string:", err)
+		log.Println("Error getting artifacts list string:", err)
 		return nil
 	}
 
