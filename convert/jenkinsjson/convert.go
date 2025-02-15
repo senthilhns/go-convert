@@ -720,6 +720,8 @@ func collectStepsWithID(currentNode jenkinsjson.Node, stepGroupWithId *[]StepGro
 	case "rtMavenRun":
 		fallthrough
 	case "publishBuildInfo":
+		fallthrough
+	case "rtPromote":
 		step := jenkinsjson.ConvertArtifactoryRtCommand(currentNode.AttributesMap["jenkins.pipeline.step.type"], currentNode, variables)
 		*stepWithIDList = append(*stepWithIDList, StepWithID{Step: step, ID: id})
 	case "readMavenPom":
