@@ -10,12 +10,15 @@ const (
 	ArtifactoryRtCommandsPluginImage = "plugins/artifactory"
 	InputPlaceHolder                 = "<+input>"
 	MvnTool                          = "mvn"
+	GradleTool                       = "gradle"
 )
 
 func ConvertArtifactoryRtCommand(stepType string, node Node, variables map[string]string) *harness.Step {
 	switch stepType {
 	case "rtMavenRun":
 		return convertRtMavenRun(node, variables)
+	case "rtGradleRun":
+		return convertRtGradleRun(node, variables)
 	case "publishBuildInfo":
 		return convertPublishBuildInfo(node, variables)
 	case "rtPromote":
@@ -47,6 +50,31 @@ func convertRtMavenRun(node Node, variables map[string]string) *harness.Step {
 	tmpStepPlugin.With["build_tool"] = MvnTool
 	attributesList := []string{"url", "username", "password", "access_token",
 		"build_name", "build_number", "resolver_id", "deployer_id", "resolve_release_repo", "resolve_snapshot_repo"}
+	err := SetRtCommandAttributesToInputPlaceHolder(tmpStepPlugin, attributesList)
+	if err != nil {
+		fmt.Println("Error: failed to set attributes to input placeholder")
+		return nil
+	}
+	return step
+}
+
+func convertRtGradleRun(node Node, variables map[string]string) *harness.Step {
+	step := GetStepWithProperties(&node, nil, ArtifactoryRtCommandsPluginImage)
+	if step == nil {
+		fmt.Println("Error: failed to convert rtGradleRun")
+		return nil
+	}
+	tmpStepPlugin, ok := step.Spec.(*harness.StepPlugin)
+	if !ok {
+		fmt.Println("Error: failed to convert rtGradleRun")
+		return nil
+	}
+	if tmpStepPlugin.With == nil {
+		tmpStepPlugin.With = map[string]interface{}{}
+	}
+	tmpStepPlugin.With["build_tool"] = GradleTool
+	attributesList := []string{"url", "username", "password", "access_token", "build_name",
+		"build_number", "resolver_id", "deployer_id", "repo_resolve", "repo_deploy"}
 	err := SetRtCommandAttributesToInputPlaceHolder(tmpStepPlugin, attributesList)
 	if err != nil {
 		fmt.Println("Error: failed to set attributes to input placeholder")

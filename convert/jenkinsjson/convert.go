@@ -717,7 +717,10 @@ func collectStepsWithID(currentNode jenkinsjson.Node, stepGroupWithId *[]StepGro
 
 	case "nexusArtifactUploader":
 		*stepWithIDList = append(*stepWithIDList, StepWithID{Step: jenkinsjson.ConvertNexusArtifactUploader(currentNode, variables), ID: id})
+
 	case "rtMavenRun":
+		fallthrough
+	case "rtGradleRun":
 		fallthrough
 	case "publishBuildInfo":
 		fallthrough
