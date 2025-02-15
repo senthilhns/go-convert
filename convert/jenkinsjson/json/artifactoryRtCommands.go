@@ -20,6 +20,8 @@ func ConvertArtifactoryRtCommand(stepType string, node Node, variables map[strin
 		return convertPublishBuildInfo(node, variables)
 	case "rtPromote":
 		return convertRtPromote(node, variables)
+	case "xrayScan":
+		return convertXrayScan(node, variables)
 	}
 	return nil
 }
@@ -96,6 +98,31 @@ func convertRtPromote(node Node, variables map[string]string) *harness.Step {
 	tmpStepPlugin.With["command"] = "promote"
 	attributesList := []string{"url", "username", "password", "access_token", "build_name",
 		"build_number", "target", "copy"}
+	err := SetRtCommandAttributesToInputPlaceHolder(tmpStepPlugin, attributesList)
+	if err != nil {
+		fmt.Println("Error: failed to set attributes to input placeholder")
+		return nil
+	}
+	return step
+}
+
+func convertXrayScan(node Node, variables map[string]string) *harness.Step {
+	step := GetStepWithProperties(&node, nil, ArtifactoryRtCommandsPluginImage)
+	if step == nil {
+		fmt.Println("Error: failed to convert xrayScan")
+		return nil
+	}
+	tmpStepPlugin, ok := step.Spec.(*harness.StepPlugin)
+	if !ok {
+		fmt.Println("Error: failed to convert xrayScan")
+		return nil
+	}
+	if tmpStepPlugin.With == nil {
+		tmpStepPlugin.With = map[string]interface{}{}
+	}
+	tmpStepPlugin.With["command"] = "scan"
+	attributesList := []string{"url", "username", "password", "access_token", "build_name",
+		"build_number", "log_level"}
 	err := SetRtCommandAttributesToInputPlaceHolder(tmpStepPlugin, attributesList)
 	if err != nil {
 		fmt.Println("Error: failed to set attributes to input placeholder")
