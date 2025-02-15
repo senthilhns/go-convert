@@ -15,6 +15,8 @@ const (
 
 func ConvertArtifactoryRtCommand(stepType string, node Node, variables map[string]string) *harness.Step {
 	switch stepType {
+	case "rtDownload":
+		return convertRtDownload(node, variables)
 	case "rtMavenRun":
 		return convertRtMavenRun(node, variables)
 	case "rtGradleRun":
@@ -101,6 +103,31 @@ func convertPublishBuildInfo(node Node, variables map[string]string) *harness.St
 	attributesList := []string{"build_tool", "url", "username", "password", "access_token", "build_name",
 		"build_number", "deployer_id", "deploy_release_repo", "deploy_snapshot_repo"}
 
+	err := SetRtCommandAttributesToInputPlaceHolder(tmpStepPlugin, attributesList)
+	if err != nil {
+		fmt.Println("Error: failed to set attributes to input placeholder")
+		return nil
+	}
+	return step
+}
+
+func convertRtDownload(node Node, variables map[string]string) *harness.Step {
+	step := GetStepWithProperties(&node, nil, ArtifactoryRtCommandsPluginImage)
+	if step == nil {
+		fmt.Println("Error: failed to convert rtDownload")
+		return nil
+	}
+	tmpStepPlugin, ok := step.Spec.(*harness.StepPlugin)
+	if !ok {
+		fmt.Println("Error: failed to convert rtDownload")
+		return nil
+	}
+	if tmpStepPlugin.With == nil {
+		tmpStepPlugin.With = map[string]interface{}{}
+	}
+	tmpStepPlugin.With["command"] = "download"
+	attributesList := []string{"url", "username", "password", "build_name",
+		"build_number", "module", "project", "spec_path"}
 	err := SetRtCommandAttributesToInputPlaceHolder(tmpStepPlugin, attributesList)
 	if err != nil {
 		fmt.Println("Error: failed to set attributes to input placeholder")
