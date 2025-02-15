@@ -1,0 +1,92 @@
+package json
+
+import (
+	"errors"
+	"fmt"
+	harness "github.com/drone/spec/dist/go"
+)
+
+const (
+	ArtifactoryRtCommandsPluginImage = "plugins/artifactory"
+	InputPlaceHolder                 = "<+input>"
+	MvnTool                          = "mvn"
+)
+
+func ConvertArtifactoryRtCommand(stepType string, node Node, variables map[string]string) *harness.Step {
+	switch stepType {
+	case "rtMavenRun":
+		return convertRtMavenRun(node, variables)
+	case "publishBuildInfo":
+		return convertPublishBuildInfo(node, variables)
+	}
+	return nil
+}
+
+var ConvertRtMavenRunParamMapperList = []JenkinsToDroneParamMapper{
+	{"pom", "source", StringType, nil},
+}
+
+func convertRtMavenRun(node Node, variables map[string]string) *harness.Step {
+	step := GetStepWithProperties(&node, ConvertRtMavenRunParamMapperList, ArtifactoryRtCommandsPluginImage)
+	if step == nil {
+		fmt.Println("Error: failed to convert rtMavenRun")
+		return nil
+	}
+	tmpStepPlugin, ok := step.Spec.(*harness.StepPlugin)
+	if !ok {
+		fmt.Println("Error: failed to convert rtMavenRun")
+		return nil
+	}
+	if tmpStepPlugin.With == nil {
+		tmpStepPlugin.With = map[string]interface{}{}
+	}
+	tmpStepPlugin.With["build_tool"] = MvnTool
+	attributesList := []string{"url", "username", "password", "access_token",
+		"build_name", "build_number", "resolver_id", "deployer_id", "resolve_release_repo", "resolve_snapshot_repo"}
+	err := SetRtCommandAttributesToInputPlaceHolder(tmpStepPlugin, attributesList)
+	if err != nil {
+		fmt.Println("Error: failed to set attributes to input placeholder")
+		return nil
+	}
+	return step
+}
+
+func convertPublishBuildInfo(node Node, variables map[string]string) *harness.Step {
+	step := GetStepWithProperties(&node, nil, ArtifactoryRtCommandsPluginImage)
+	if step == nil {
+		fmt.Println("Error: failed to convert publishBuildInfo")
+		return nil
+	}
+	tmpStepPlugin, ok := step.Spec.(*harness.StepPlugin)
+	if !ok {
+		fmt.Println("Error: failed to convert publishBuildInfo")
+		return nil
+	}
+	if tmpStepPlugin.With == nil {
+		tmpStepPlugin.With = map[string]interface{}{}
+	}
+	tmpStepPlugin.With["build_tool"] = MvnTool
+	tmpStepPlugin.With["command"] = "publish"
+	attributesList := []string{"url", "username", "password", "access_token", "build_name",
+		"build_number", "deployer_id", "deploy_release_repo", "deploy_snapshot_repo"}
+
+	err := SetRtCommandAttributesToInputPlaceHolder(tmpStepPlugin, attributesList)
+	if err != nil {
+		fmt.Println("Error: failed to set attributes to input placeholder")
+		return nil
+	}
+	return step
+}
+
+func SetRtCommandAttributesToInputPlaceHolder(tmpStepPlugin *harness.StepPlugin, attributeValues []string) error {
+	if tmpStepPlugin == nil {
+		errStr := "error: rtCommand StepPlugin is nil"
+		fmt.Println(errStr)
+		return errors.New(errStr)
+	}
+
+	for _, attribute := range attributeValues {
+		tmpStepPlugin.With[attribute] = InputPlaceHolder
+	}
+	return nil
+}
