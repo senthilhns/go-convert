@@ -1128,6 +1128,11 @@ line3'''
     }
 
     // rtDownload
+    environment {
+        ARTIFACTORY_SERVER_ID = 'jf001'
+        ARTIFACTORY_REPO = 'tst-libs-snapshot/'
+        FILE_NAME = 'sample.txt'
+    }
     stages {
         stage('Create Text File') {
             steps {
@@ -1181,6 +1186,33 @@ line3'''
                 script {
                     def downloadedContent = readFile "downloaded/${FILE_NAME}"
                     echo "Downloaded File Content: ${downloadedContent}"
+                }
+            }
+        }
+    }
+
+    // rtGradleRun
+    environment {
+        GRADLE_HOME = '/opt/gradle-7.6.2'
+        PATH = "${GRADLE_HOME}/bin:$PATH"
+    }
+    stages {
+        stage('Git Clone') {
+            steps {
+                git branch: 'master', url: 'https://github.com/senthilhns/gradle-test-01.git'
+            }
+        }
+        stage('Gradle Build with Artifactory') {
+            steps {
+                script {
+                    def artifactoryServer = Artifactory.server('jf001')
+                    def buildInfo = Artifactory.newBuildInfo()
+                    rtGradleRun(
+                        buildName: 'gradle02',
+                        buildNumber: '2',
+                        tasks: 'clean build',
+                        usesPlugin: false
+                    )
                 }
             }
         }
