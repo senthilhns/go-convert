@@ -255,7 +255,7 @@ const expectedPublishBuildInfoStep = `{
 
 func TestPublishBuildInfo(t *testing.T) {
 	variables := make(map[string]string)
-	jsonFilePath := "../convertTestFiles/artifactoryRtCommands/rtPublishBuildInfo.json"
+	jsonFilePath := "../convertTestFiles/artifactoryRtCommands/publishBuildInfo.json"
 
 	workingDir, err := os.Getwd()
 	if err != nil {

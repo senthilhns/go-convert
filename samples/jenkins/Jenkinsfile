@@ -1294,4 +1294,18 @@ line3'''
             }
         }
     }
+
+    // rtPublishBuildInfo
+    stage('Publish Build Info to Artifactory') {
+        steps {
+            script {
+                def buildInfo = rtPublishBuildInfo(
+                    serverId: ARTIFACTORY_SERVER_ID,
+                    buildName: BUILD_NAME,
+                    buildNumber: BUILD_NUMBER
+                )
+                echo "Build Info Published: ${buildInfo}"
+            }
+        }
+    }
 }
