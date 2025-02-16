@@ -1126,4 +1126,64 @@ line3'''
             echo 'Build failed. Check test reports for details.'
         }
     }
+
+    // rtDownload
+    stages {
+        stage('Create Text File') {
+            steps {
+                script {
+                    writeFile file: "${FILE_NAME}", text: 'This is a sample text file for Artifactory upload/download demo.'
+                    echo "Created file: ${FILE_NAME}"
+                }
+            }
+        }
+
+        stage('Upload Text File to Artifactory') {
+            steps {
+                script {
+                    rtUpload(
+                        serverId: ARTIFACTORY_SERVER_ID,
+                        spec: """{
+                            "files": [
+                                {
+                                    "pattern": "${FILE_NAME}",
+                                    "target": "${ARTIFACTORY_REPO}${FILE_NAME}"
+                                }
+                            ]
+                        }"""
+                    )
+                    echo "File uploaded to Artifactory."
+                }
+            }
+        }
+
+        stage('Download Text File from Artifactory') {
+            steps {
+                script {
+                    rtDownload(
+                        serverId: ARTIFACTORY_SERVER_ID,
+                        spec: """{
+                            "files": [
+                                {
+                                    "pattern": "${ARTIFACTORY_REPO}${FILE_NAME}",
+                                    "target": "./downloaded/"
+                                }
+                            ]
+                        }"""
+                    )
+                    echo "File downloaded from Artifactory."
+                }
+            }
+        }
+
+        stage('Verify Download') {
+            steps {
+                script {
+                    def downloadedContent = readFile "downloaded/${FILE_NAME}"
+                    echo "Downloaded File Content: ${downloadedContent}"
+                }
+            }
+        }
+    }
+
 }
