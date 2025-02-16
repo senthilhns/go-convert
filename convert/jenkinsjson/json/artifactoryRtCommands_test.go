@@ -2,7 +2,6 @@ package json
 
 import (
 	"encoding/json"
-	"fmt"
 	harness "github.com/drone/spec/dist/go"
 	"github.com/google/go-cmp/cmp"
 	"os"
@@ -63,11 +62,6 @@ func TestRtDownload(t *testing.T) {
 	}
 
 	tmpTestStep := convertRtDownload(node, variables)
-
-	s, _ := ToJsonStringFromStruct(tmpTestStep)
-	fmt.Println("uuuuuuuuuuuuuuuuuu")
-	fmt.Println(s)
-
 	wantStep, err := ToStructFromJsonString[harness.Step](expectedRtDownloadStep)
 	if err != nil {
 		t.Fatalf("want step : %v", err)
@@ -92,6 +86,7 @@ const expectedRtMavenRunStep = `{
             "build_number": "\u003c+input\u003e",
             "build_tool": "mvn",
             "deployer_id": "\u003c+input\u003e",
+            "goals": "clean install",
             "password": "\u003c+input\u003e",
             "resolve_release_repo": "\u003c+input\u003e",
             "resolve_snapshot_repo": "\u003c+input\u003e",
@@ -106,6 +101,7 @@ const expectedRtMavenRunStep = `{
             "build_number": "\u003c+input\u003e",
             "build_tool": "mvn",
             "deployer_id": "\u003c+input\u003e",
+            "goals": "clean install",
             "password": "\u003c+input\u003e",
             "resolve_release_repo": "\u003c+input\u003e",
             "resolve_snapshot_repo": "\u003c+input\u003e",
@@ -139,11 +135,6 @@ func TestRtMavenRun(t *testing.T) {
 	}
 
 	tmpTestStep := convertRtMavenRun(node, variables)
-
-	s, _ := ToJsonStringFromStruct(tmpTestStep)
-	fmt.Println("uuuuuuuuuuuuuuuuuu")
-	fmt.Println(s)
-
 	wantStep, err := ToStructFromJsonString[harness.Step](expectedRtMavenRunStep)
 	if err != nil {
 		t.Fatalf("want step : %v", err)
@@ -156,40 +147,41 @@ func TestRtMavenRun(t *testing.T) {
 	}
 }
 
-// rtGradleRun.json
 const expectedRtGradleRunStep = `{
-    "id": "rtGradleRun110fc6",
-    "name": "rtGradleRun",
-    "type": "plugin",
-    "spec": {
-        "image": "plugins/artifactory",
-        "with": {
-            "access_token": "\u003c+input\u003e",
-            "build_name": "\u003c+input\u003e",
-            "build_number": "\u003c+input\u003e",
-            "build_tool": "gradle",
-            "deployer_id": "\u003c+input\u003e",
-            "password": "\u003c+input\u003e",
-            "repo_deploy": "\u003c+input\u003e",
-            "repo_resolve": "\u003c+input\u003e",
-            "resolver_id": "\u003c+input\u003e",
-            "url": "\u003c+input\u003e",
-            "username": "\u003c+input\u003e"
-        },
-        "inputs": {
-            "access_token": "\u003c+input\u003e",
-            "build_name": "\u003c+input\u003e",
-            "build_number": "\u003c+input\u003e",
-            "build_tool": "gradle",
-            "deployer_id": "\u003c+input\u003e",
-            "password": "\u003c+input\u003e",
-            "repo_deploy": "\u003c+input\u003e",
-            "repo_resolve": "\u003c+input\u003e",
-            "resolver_id": "\u003c+input\u003e",
-            "url": "\u003c+input\u003e",
-            "username": "\u003c+input\u003e"
-        }
+  "id": "rtGradleRun110fc6",
+  "name": "rtGradleRun",
+  "type": "plugin",
+  "spec": {
+    "image": "plugins/artifactory",
+    "with": {
+      "access_token": "\u003c+input\u003e",
+      "build_name": "\u003c+input\u003e",
+      "build_number": "\u003c+input\u003e",
+      "build_tool": "gradle",
+      "deployer_id": "\u003c+input\u003e",
+      "password": "\u003c+input\u003e",
+      "repo_deploy": "\u003c+input\u003e",
+      "repo_resolve": "\u003c+input\u003e",
+      "resolver_id": "\u003c+input\u003e",
+      "tasks": "clean build",
+      "url": "\u003c+input\u003e",
+      "username": "\u003c+input\u003e"
+    },
+    "inputs": {
+      "access_token": "\u003c+input\u003e",
+      "build_name": "\u003c+input\u003e",
+      "build_number": "\u003c+input\u003e",
+      "build_tool": "gradle",
+      "deployer_id": "\u003c+input\u003e",
+      "password": "\u003c+input\u003e",
+      "repo_deploy": "\u003c+input\u003e",
+      "repo_resolve": "\u003c+input\u003e",
+      "resolver_id": "\u003c+input\u003e",
+      "tasks": "clean build",
+      "url": "\u003c+input\u003e",
+      "username": "\u003c+input\u003e"
     }
+  }
 }`
 
 func TestRtGradleRun(t *testing.T) {
@@ -214,11 +206,6 @@ func TestRtGradleRun(t *testing.T) {
 	}
 
 	tmpTestStep := convertRtGradleRun(node, variables)
-
-	s, _ := ToJsonStringFromStruct(tmpTestStep)
-	fmt.Println("uuuuuuuuuuuuuuuuuu")
-	fmt.Println(s)
-
 	wantStep, err := ToStructFromJsonString[harness.Step](expectedRtGradleRunStep)
 	if err != nil {
 		t.Fatalf("want step : %v", err)
@@ -268,7 +255,6 @@ const expectedPublishBuildInfoStep = `{
 
 func TestPublishBuildInfo(t *testing.T) {
 	variables := make(map[string]string)
-	// /opt/hns/harness-plugins/artifactory/go-convert/convert/jenkinsjson/convertTestFiles/artifactoryRtCommands/
 	jsonFilePath := "../convertTestFiles/artifactoryRtCommands/rtPublishBuildInfo.json"
 
 	workingDir, err := os.Getwd()
@@ -289,11 +275,6 @@ func TestPublishBuildInfo(t *testing.T) {
 	}
 
 	tmpTestStep := convertPublishBuildInfo(node, variables)
-
-	s, _ := ToJsonStringFromStruct(tmpTestStep)
-	fmt.Println("uuuuuuuuuuuuuuuuuu")
-	fmt.Println(s)
-
 	wantStep, err := ToStructFromJsonString[harness.Step](expectedPublishBuildInfoStep)
 	if err != nil {
 		t.Fatalf("want step : %v", err)
@@ -314,23 +295,23 @@ const expectedRtPromoteStep = `{
     "image": "plugins/artifactory",
     "with": {
       "access_token": "\u003c+input\u003e",
-      "build_name": "\u003c+input\u003e",
-      "build_number": "\u003c+input\u003e",
+      "build_name": "mvn02",
+      "build_number": "2",
       "command": "promote",
       "copy": "\u003c+input\u003e",
       "password": "\u003c+input\u003e",
-      "target": "\u003c+input\u003e",
+      "target": "tst-libs-snapshot",
       "url": "\u003c+input\u003e",
       "username": "\u003c+input\u003e"
     },
     "inputs": {
       "access_token": "\u003c+input\u003e",
-      "build_name": "\u003c+input\u003e",
-      "build_number": "\u003c+input\u003e",
+      "build_name": "mvn02",
+      "build_number": "2",
       "command": "promote",
       "copy": "\u003c+input\u003e",
       "password": "\u003c+input\u003e",
-      "target": "\u003c+input\u003e",
+      "target": "tst-libs-snapshot",
       "url": "\u003c+input\u003e",
       "username": "\u003c+input\u003e"
     }
@@ -359,11 +340,6 @@ func TestRtPromote(t *testing.T) {
 	}
 
 	tmpTestStep := convertRtPromote(node, variables)
-
-	s, _ := ToJsonStringFromStruct(tmpTestStep)
-	fmt.Println("uuuuuuuuuuuuuuuuuu")
-	fmt.Println(s)
-
 	wantStep, err := ToStructFromJsonString[harness.Step](expectedRtPromoteStep)
 	if err != nil {
 		t.Fatalf("want step : %v", err)
@@ -384,20 +360,18 @@ const expectedXrayScanStep = `{
     "image": "plugins/artifactory",
     "with": {
       "access_token": "\u003c+input\u003e",
-      "build_name": "\u003c+input\u003e",
-      "build_number": "\u003c+input\u003e",
+      "build_name": "mvn02",
+      "build_number": "2",
       "command": "scan",
-      "log_level": "\u003c+input\u003e",
       "password": "\u003c+input\u003e",
       "url": "\u003c+input\u003e",
       "username": "\u003c+input\u003e"
     },
     "inputs": {
       "access_token": "\u003c+input\u003e",
-      "build_name": "\u003c+input\u003e",
-      "build_number": "\u003c+input\u003e",
+      "build_name": "mvn02",
+      "build_number": "2",
       "command": "scan",
-      "log_level": "\u003c+input\u003e",
       "password": "\u003c+input\u003e",
       "url": "\u003c+input\u003e",
       "username": "\u003c+input\u003e"
@@ -427,11 +401,6 @@ func TestXrayScan(t *testing.T) {
 	}
 
 	tmpTestStep := convertXrayScan(node, variables)
-
-	s, _ := ToJsonStringFromStruct(tmpTestStep)
-	fmt.Println("uuuuuuuuuuuuuuuuuu")
-	fmt.Println(s)
-
 	wantStep, err := ToStructFromJsonString[harness.Step](expectedXrayScanStep)
 	if err != nil {
 		t.Fatalf("want step : %v", err)
