@@ -1,0 +1,445 @@
+package json
+
+import (
+	"encoding/json"
+	"fmt"
+	harness "github.com/drone/spec/dist/go"
+	"github.com/google/go-cmp/cmp"
+	"os"
+	"path/filepath"
+	"testing"
+)
+
+var expectedRtDownloadStep = `{
+    "id": "rtUploadc4112c",
+    "name": "rtUpload",
+    "type": "plugin",
+    "spec": {
+        "image": "plugins/artifactory",
+        "with": {
+            "build_name": "\u003c+input\u003e",
+            "build_number": "\u003c+input\u003e",
+            "command": "download",
+            "module": "\u003c+input\u003e",
+            "password": "\u003c+input\u003e",
+            "project": "\u003c+input\u003e",
+            "spec_path": "\u003c+input\u003e",
+            "url": "\u003c+input\u003e",
+            "username": "\u003c+input\u003e"
+        },
+        "inputs": {
+            "build_name": "\u003c+input\u003e",
+            "build_number": "\u003c+input\u003e",
+            "command": "download",
+            "module": "\u003c+input\u003e",
+            "password": "\u003c+input\u003e",
+            "project": "\u003c+input\u003e",
+            "spec_path": "\u003c+input\u003e",
+            "url": "\u003c+input\u003e",
+            "username": "\u003c+input\u003e"
+        }
+    }
+}`
+
+func TestRtDownload(t *testing.T) {
+	variables := make(map[string]string)
+	jsonFilePath := "../convertTestFiles/artifactoryRtCommands/rtDownload.json"
+
+	workingDir, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("Failed to get current working directory: %v", err)
+	}
+
+	filePath := filepath.Join(workingDir, jsonFilePath)
+
+	jsonData, err := os.ReadFile(filePath)
+	if err != nil {
+		t.Fatalf("Failed to read JSON file: %v", err)
+	}
+
+	var node Node
+	if err := json.Unmarshal(jsonData, &node); err != nil {
+		t.Fatalf("Failed to decode JSON: %v", err)
+	}
+
+	tmpTestStep := convertRtDownload(node, variables)
+
+	s, _ := ToJsonStringFromStruct(tmpTestStep)
+	fmt.Println("uuuuuuuuuuuuuuuuuu")
+	fmt.Println(s)
+
+	wantStep, err := ToStructFromJsonString[harness.Step](expectedRtDownloadStep)
+	if err != nil {
+		t.Fatalf("want step : %v", err)
+	}
+
+	diffs := cmp.Diff(wantStep, *tmpTestStep)
+
+	if len(diffs) != 0 {
+		t.Fatalf("Failed to convert JSON to struct: %v", diffs)
+	}
+}
+
+const expectedRtMavenRunStep = `{
+    "id": "rtMavenRundac366",
+    "name": "rtMavenRun",
+    "type": "plugin",
+    "spec": {
+        "image": "plugins/artifactory",
+        "with": {
+            "access_token": "\u003c+input\u003e",
+            "build_name": "\u003c+input\u003e",
+            "build_number": "\u003c+input\u003e",
+            "build_tool": "mvn",
+            "deployer_id": "\u003c+input\u003e",
+            "password": "\u003c+input\u003e",
+            "resolve_release_repo": "\u003c+input\u003e",
+            "resolve_snapshot_repo": "\u003c+input\u003e",
+            "resolver_id": "\u003c+input\u003e",
+            "source": "pom.xml",
+            "url": "\u003c+input\u003e",
+            "username": "\u003c+input\u003e"
+        },
+        "inputs": {
+            "access_token": "\u003c+input\u003e",
+            "build_name": "\u003c+input\u003e",
+            "build_number": "\u003c+input\u003e",
+            "build_tool": "mvn",
+            "deployer_id": "\u003c+input\u003e",
+            "password": "\u003c+input\u003e",
+            "resolve_release_repo": "\u003c+input\u003e",
+            "resolve_snapshot_repo": "\u003c+input\u003e",
+            "resolver_id": "\u003c+input\u003e",
+            "source": "pom.xml",
+            "url": "\u003c+input\u003e",
+            "username": "\u003c+input\u003e"
+        }
+    }
+}`
+
+func TestRtMavenRun(t *testing.T) {
+	variables := make(map[string]string)
+	jsonFilePath := "../convertTestFiles/artifactoryRtCommands/rtMavenRun.json"
+
+	workingDir, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("Failed to get current working directory: %v", err)
+	}
+
+	filePath := filepath.Join(workingDir, jsonFilePath)
+
+	jsonData, err := os.ReadFile(filePath)
+	if err != nil {
+		t.Fatalf("Failed to read JSON file: %v", err)
+	}
+
+	var node Node
+	if err := json.Unmarshal(jsonData, &node); err != nil {
+		t.Fatalf("Failed to decode JSON: %v", err)
+	}
+
+	tmpTestStep := convertRtMavenRun(node, variables)
+
+	s, _ := ToJsonStringFromStruct(tmpTestStep)
+	fmt.Println("uuuuuuuuuuuuuuuuuu")
+	fmt.Println(s)
+
+	wantStep, err := ToStructFromJsonString[harness.Step](expectedRtMavenRunStep)
+	if err != nil {
+		t.Fatalf("want step : %v", err)
+	}
+
+	diffs := cmp.Diff(wantStep, *tmpTestStep)
+
+	if len(diffs) != 0 {
+		t.Fatalf("Failed to convert JSON to struct: %v", diffs)
+	}
+}
+
+// rtGradleRun.json
+const expectedRtGradleRunStep = `{
+    "id": "rtGradleRun110fc6",
+    "name": "rtGradleRun",
+    "type": "plugin",
+    "spec": {
+        "image": "plugins/artifactory",
+        "with": {
+            "access_token": "\u003c+input\u003e",
+            "build_name": "\u003c+input\u003e",
+            "build_number": "\u003c+input\u003e",
+            "build_tool": "gradle",
+            "deployer_id": "\u003c+input\u003e",
+            "password": "\u003c+input\u003e",
+            "repo_deploy": "\u003c+input\u003e",
+            "repo_resolve": "\u003c+input\u003e",
+            "resolver_id": "\u003c+input\u003e",
+            "url": "\u003c+input\u003e",
+            "username": "\u003c+input\u003e"
+        },
+        "inputs": {
+            "access_token": "\u003c+input\u003e",
+            "build_name": "\u003c+input\u003e",
+            "build_number": "\u003c+input\u003e",
+            "build_tool": "gradle",
+            "deployer_id": "\u003c+input\u003e",
+            "password": "\u003c+input\u003e",
+            "repo_deploy": "\u003c+input\u003e",
+            "repo_resolve": "\u003c+input\u003e",
+            "resolver_id": "\u003c+input\u003e",
+            "url": "\u003c+input\u003e",
+            "username": "\u003c+input\u003e"
+        }
+    }
+}`
+
+func TestRtGradleRun(t *testing.T) {
+	variables := make(map[string]string)
+	jsonFilePath := "../convertTestFiles/artifactoryRtCommands/rtGradleRun.json"
+
+	workingDir, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("Failed to get current working directory: %v", err)
+	}
+
+	filePath := filepath.Join(workingDir, jsonFilePath)
+
+	jsonData, err := os.ReadFile(filePath)
+	if err != nil {
+		t.Fatalf("Failed to read JSON file: %v", err)
+	}
+
+	var node Node
+	if err := json.Unmarshal(jsonData, &node); err != nil {
+		t.Fatalf("Failed to decode JSON: %v", err)
+	}
+
+	tmpTestStep := convertRtGradleRun(node, variables)
+
+	s, _ := ToJsonStringFromStruct(tmpTestStep)
+	fmt.Println("uuuuuuuuuuuuuuuuuu")
+	fmt.Println(s)
+
+	wantStep, err := ToStructFromJsonString[harness.Step](expectedRtGradleRunStep)
+	if err != nil {
+		t.Fatalf("want step : %v", err)
+	}
+
+	diffs := cmp.Diff(wantStep, *tmpTestStep)
+
+	if len(diffs) != 0 {
+		t.Fatalf("Failed to convert JSON to struct: %v", diffs)
+	}
+}
+
+const expectedPublishBuildInfoStep = `{
+  "id": "publishBuildInfo66c280",
+  "name": "publishBuildInfo",
+  "type": "plugin",
+  "spec": {
+    "image": "plugins/artifactory",
+    "with": {
+      "access_token": "\u003c+input\u003e",
+      "build_name": "\u003c+input\u003e",
+      "build_number": "\u003c+input\u003e",
+      "build_tool": "\u003c+input\u003e",
+      "command": "publish",
+      "deploy_release_repo": "\u003c+input\u003e",
+      "deploy_snapshot_repo": "\u003c+input\u003e",
+      "deployer_id": "\u003c+input\u003e",
+      "password": "\u003c+input\u003e",
+      "url": "\u003c+input\u003e",
+      "username": "\u003c+input\u003e"
+    },
+    "inputs": {
+      "access_token": "\u003c+input\u003e",
+      "build_name": "\u003c+input\u003e",
+      "build_number": "\u003c+input\u003e",
+      "build_tool": "\u003c+input\u003e",
+      "command": "publish",
+      "deploy_release_repo": "\u003c+input\u003e",
+      "deploy_snapshot_repo": "\u003c+input\u003e",
+      "deployer_id": "\u003c+input\u003e",
+      "password": "\u003c+input\u003e",
+      "url": "\u003c+input\u003e",
+      "username": "\u003c+input\u003e"
+    }
+  }
+}`
+
+func TestPublishBuildInfo(t *testing.T) {
+	variables := make(map[string]string)
+	// /opt/hns/harness-plugins/artifactory/go-convert/convert/jenkinsjson/convertTestFiles/artifactoryRtCommands/
+	jsonFilePath := "../convertTestFiles/artifactoryRtCommands/rtPublishBuildInfo.json"
+
+	workingDir, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("Failed to get current working directory: %v", err)
+	}
+
+	filePath := filepath.Join(workingDir, jsonFilePath)
+
+	jsonData, err := os.ReadFile(filePath)
+	if err != nil {
+		t.Fatalf("Failed to read JSON file: %v", err)
+	}
+
+	var node Node
+	if err := json.Unmarshal(jsonData, &node); err != nil {
+		t.Fatalf("Failed to decode JSON: %v", err)
+	}
+
+	tmpTestStep := convertPublishBuildInfo(node, variables)
+
+	s, _ := ToJsonStringFromStruct(tmpTestStep)
+	fmt.Println("uuuuuuuuuuuuuuuuuu")
+	fmt.Println(s)
+
+	wantStep, err := ToStructFromJsonString[harness.Step](expectedPublishBuildInfoStep)
+	if err != nil {
+		t.Fatalf("want step : %v", err)
+	}
+
+	diffs := cmp.Diff(wantStep, *tmpTestStep)
+
+	if len(diffs) != 0 {
+		t.Fatalf("Failed to convert JSON to struct: %v", diffs)
+	}
+}
+
+const expectedRtPromoteStep = `{
+  "id": "rtPromoted6c65e",
+  "name": "rtPromote",
+  "type": "plugin",
+  "spec": {
+    "image": "plugins/artifactory",
+    "with": {
+      "access_token": "\u003c+input\u003e",
+      "build_name": "\u003c+input\u003e",
+      "build_number": "\u003c+input\u003e",
+      "command": "promote",
+      "copy": "\u003c+input\u003e",
+      "password": "\u003c+input\u003e",
+      "target": "\u003c+input\u003e",
+      "url": "\u003c+input\u003e",
+      "username": "\u003c+input\u003e"
+    },
+    "inputs": {
+      "access_token": "\u003c+input\u003e",
+      "build_name": "\u003c+input\u003e",
+      "build_number": "\u003c+input\u003e",
+      "command": "promote",
+      "copy": "\u003c+input\u003e",
+      "password": "\u003c+input\u003e",
+      "target": "\u003c+input\u003e",
+      "url": "\u003c+input\u003e",
+      "username": "\u003c+input\u003e"
+    }
+  }
+}`
+
+func TestRtPromote(t *testing.T) {
+	variables := make(map[string]string)
+	jsonFilePath := "../convertTestFiles/artifactoryRtCommands/rtPromote.json"
+
+	workingDir, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("Failed to get current working directory: %v", err)
+	}
+
+	filePath := filepath.Join(workingDir, jsonFilePath)
+
+	jsonData, err := os.ReadFile(filePath)
+	if err != nil {
+		t.Fatalf("Failed to read JSON file: %v", err)
+	}
+
+	var node Node
+	if err := json.Unmarshal(jsonData, &node); err != nil {
+		t.Fatalf("Failed to decode JSON: %v", err)
+	}
+
+	tmpTestStep := convertRtPromote(node, variables)
+
+	s, _ := ToJsonStringFromStruct(tmpTestStep)
+	fmt.Println("uuuuuuuuuuuuuuuuuu")
+	fmt.Println(s)
+
+	wantStep, err := ToStructFromJsonString[harness.Step](expectedRtPromoteStep)
+	if err != nil {
+		t.Fatalf("want step : %v", err)
+	}
+
+	diffs := cmp.Diff(wantStep, *tmpTestStep)
+
+	if len(diffs) != 0 {
+		t.Fatalf("Failed to convert JSON to struct: %v", diffs)
+	}
+}
+
+const expectedXrayScanStep = `{
+  "id": "xrayScan673cd5",
+  "name": "xrayScan",
+  "type": "plugin",
+  "spec": {
+    "image": "plugins/artifactory",
+    "with": {
+      "access_token": "\u003c+input\u003e",
+      "build_name": "\u003c+input\u003e",
+      "build_number": "\u003c+input\u003e",
+      "command": "scan",
+      "log_level": "\u003c+input\u003e",
+      "password": "\u003c+input\u003e",
+      "url": "\u003c+input\u003e",
+      "username": "\u003c+input\u003e"
+    },
+    "inputs": {
+      "access_token": "\u003c+input\u003e",
+      "build_name": "\u003c+input\u003e",
+      "build_number": "\u003c+input\u003e",
+      "command": "scan",
+      "log_level": "\u003c+input\u003e",
+      "password": "\u003c+input\u003e",
+      "url": "\u003c+input\u003e",
+      "username": "\u003c+input\u003e"
+    }
+  }
+}`
+
+func TestXrayScan(t *testing.T) {
+	variables := make(map[string]string)
+	jsonFilePath := "../convertTestFiles/artifactoryRtCommands/xrayScan.json"
+
+	workingDir, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("Failed to get current working directory: %v", err)
+	}
+
+	filePath := filepath.Join(workingDir, jsonFilePath)
+
+	jsonData, err := os.ReadFile(filePath)
+	if err != nil {
+		t.Fatalf("Failed to read JSON file: %v", err)
+	}
+
+	var node Node
+	if err := json.Unmarshal(jsonData, &node); err != nil {
+		t.Fatalf("Failed to decode JSON: %v", err)
+	}
+
+	tmpTestStep := convertXrayScan(node, variables)
+
+	s, _ := ToJsonStringFromStruct(tmpTestStep)
+	fmt.Println("uuuuuuuuuuuuuuuuuu")
+	fmt.Println(s)
+
+	wantStep, err := ToStructFromJsonString[harness.Step](expectedXrayScanStep)
+	if err != nil {
+		t.Fatalf("want step : %v", err)
+	}
+
+	diffs := cmp.Diff(wantStep, *tmpTestStep)
+
+	if len(diffs) != 0 {
+		t.Fatalf("Failed to convert JSON to struct: %v", diffs)
+	}
+}
